@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
         }
     }
     printf("NO\n");
+    free(peo);
 
     return 0;
 }
