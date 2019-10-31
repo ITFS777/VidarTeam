@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <windows.h>
-#define NOTEST
 //////////////////////////////////////////////////////////////////////////
 typedef struct list
 {
@@ -26,18 +25,12 @@ bool is_var(char ch);
 bool is_num(char ch);
 bool is_symbol(char ch);
 //////////////////////////////////////////////////////////////////////////
-#ifdef NOTEST
 int main(int argc, char *argv[])
 {
     unsigned int item_c = 0, symbol_c = 0;
     int i = 0, j = 0;
     char *symbol = (char *)calloc(1, sizeof(char));     //符号表
     item_t *item = (item_t *)calloc(1, sizeof(item_t)); //项表
-
-/*    goto _get_exp;
-_error_input:
-    puts("error input");
-_get_exp:*/
 
     if (get_item(item, symbol, &item_c, &symbol_c)) //赋值表达式
     {
@@ -59,72 +52,53 @@ _error:
     system("pause");
     return 0;
 }
-#endif
-//////////////////////////////////////////////////////////////////////////
-#ifdef TEST
-int main(int argc, char *argv[])
-{
-
-    return 0;
-}
-#endif
 //////////////////////////////////////////////////////////////////////////
 bool get_item(item_t *item, char *symbol, unsigned int *item_c, unsigned int *symbol_c)
 { //item为项表，下标i;symbol为符号表，下标j;
-    int i = 0, j = 0;
     double tmp = 0;
 
-    *item_c = 0;
-    *symbol_c = 0;
+    *item_c = 0;    //初始化项计数
+    *symbol_c = 0;  //初始化符号计数
 
     bool assign = false; //是否为赋值表达式
 
-    while (1)
+    while (1)   //循环读取项
     {
         skip_space();        //跳过可能存在的空格
         char ch = getchar(); //读取当前项首字符
 
         switch (get_type(ch))
         {
-            /*        case 0: //错误
-						goto _error_input;*/
         case 1: //变量
             ungetc(ch, stdin);
             if ((*item_c) > 0)
                 add_item(item, *item_c);
-            item[i].var = (char *)calloc(1, sizeof(char));
-            /*            if (get_var_name(item[i].var) == NULL)
-							goto _error;
-						else*/
-            get_var_name(item[i++].var);
+            item[*item_c].var = (char *)calloc(1, sizeof(char));
+            get_var_name(item[*item_c].var);
             (*item_c)++;
-
             break;
         case 2: //数值
             ungetc(ch, stdin);
-            scanf(" %lf", item[i++].num);
-            (*symbol_c)++;
-            add_item(item, *symbol_c);
+            if ((*item_c) > 0)
+                add_item(item, *item_c);
+            item[*item_c].num=(double*)calloc(1, sizeof(double));
+            scanf(" %lf", item[*item_c].num);
+            (*item_c)++;
             break;
         case 3: //符号
             ungetc(ch, stdin);
             if ((*symbol_c) > 0)
-                symbol = realloc(symbol, (j + 1) * sizeof(char));
-            symbol[j++] = getchar();
-            /*            if (symbol == NULL)
-							goto _error;*/
+                symbol = realloc(symbol, ((*symbol_c)+1) * sizeof(char));
+            symbol[*symbol_c] = getchar();
             (*symbol_c)++;
             break;
         case 4: //赋值
             assign = true;
-            getchar();
-            break;
-            /*        case 5: //命令
-						goto _command;*/
+            return assign;
         case 6: //结束
             return assign;
-            /*default:
-            return assign;*/
+        default:
+            return assign;
         }
     }
 }
