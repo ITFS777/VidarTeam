@@ -1,6 +1,6 @@
-# Homeworks of VidarTeam in HDU
-
+# Vidar-Team
+## Weekly Training and Homeworks
 ### Include
-* C1
-* C2
-* C3
+* C1 (6)
+* C2 (6)
+* C3 (3)
